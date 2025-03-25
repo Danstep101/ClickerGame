@@ -1,34 +1,236 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Мой Clicker Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epic Clicker Game</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin-top: 50px;
+        :root {
+            --main-color: #4a6fa5;
+            --accent-color: #ff9f1c;
+            --dark-color: #166088;
         }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: var(--dark-color);
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        #counter {
+            font-size: 3.5rem;
+            font-weight: bold;
+            margin: 25px 0;
+            color: var(--main-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
         button {
-            padding: 10px 20px;
-            font-size: 18px;
-            cursor: pointer;
-            background-color: #4CAF50;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            background: var(--main-color);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        button:hover {
+            background: var(--dark-color);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: scale(0.95);
+        }
+        
+        .stats {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .stat-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            width: 45%;
+        }
+        
+        .upgrades {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .upgrade {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 </head>
 <body>
-    <h1>Clicker Game</h1>
-    <p>Кликов: <span id="counter">0</span></p>
-    <button onclick="click()">Кликнуть!</button>
+    <div class="container">
+        <h1>Epic Clicker</h1>
+        <p class="subtitle">Кликай, чтобы зарабатывать очки!</p>
+        
+        <div id="counter">0</div>
+        
+        <button onclick="increment()">Кликнуть! 🎯</button>
+        
+        <div class="stats">
+            <div class="stat-box">
+                <h3>Кликов в секунду</h3>
+                <p id="cps">0</p>
+            </div>
+            <div class="stat-box">
+                <h3>Всего кликов</h3>
+                <p id="total-clicks">0</p>
+            </div>
+        </div>
+        
+        <div class="upgrades">
+            <h2>Улучшения</h2>
+            <div class="upgrade">
+                <div>
+                    <h3>Автокликер</h3>
+                    <p>+1 клик/сек (Цена: 50)</p>
+                </div>
+                <button onclick="buyUpgrade('autoclicker', 50)">Купить</button>
+            </div>
+        </div>
+    </div>
 
     <script>
-        let count = 0;
-        function click() {
+        // Основные переменные
+        let count = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
+        let totalClicks = localStorage.getItem('totalClicks') ? parseInt(localStorage.getItem('totalClicks')) : 0;
+        let cps = 0;
+        let autoclickerLevel = 0;
+        
+        // Инициализация
+        document.getElementById('counter').innerText = count;
+        document.getElementById('total-clicks').innerText = totalClicks;
+        document.getElementById('cps').innerText = cps;
+        
+        // Основная функция клика
+        function increment() {
             count++;
+            totalClicks++;
             document.getElementById('counter').innerText = count;
+            document.getElementById('total-clicks').innerText = totalClicks;
+            localStorage.setItem('clickCount', count);
+            localStorage.setItem('totalClicks', totalClicks);
+            
+            // Анимация кнопки
+            const btn = document.querySelector('button');
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => { btn.style.transform = 'scale(1)'; }, 100);
+            
+            // Эффект частиц
+            createParticle();
+        }
+        
+        // Система улучшений
+        function buyUpgrade(type, cost) {
+            if (count >= cost) {
+                count -= cost;
+                if (type === 'autoclicker') {
+                    autoclickerLevel++;
+                    cps += 1;
+                    document.getElementById('cps').innerText = cps;
+                }
+                document.getElementById('counter').innerText = count;
+                localStorage.setItem('clickCount', count);
+                alert('Улучшение куплено!');
+            } else {
+                alert('Недостаточно очков!');
+            }
+        }
+        
+        // Автокликер
+        setInterval(() => {
+            if (cps > 0) {
+                count += cps;
+                document.getElementById('counter').innerText = count;
+                localStorage.setItem('clickCount', count);
+            }
+        }, 1000);
+        
+        // Эффект частиц при клике
+        function createParticle() {
+            const particle = document.createElement('div');
+            particle.style.position = 'absolute';
+            particle.style.width = '10px';
+            particle.style.height = '10px';
+            particle.style.backgroundColor = 'rgba(255, 159, 28, 0.7)';
+            particle.style.borderRadius = '50%';
+            particle.style.pointerEvents = 'none';
+            
+            const buttonRect = document.querySelector('button').getBoundingClientRect();
+            const x = buttonRect.left + buttonRect.width/2;
+            const y = buttonRect.top + buttonRect.height/2;
+            
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            document.body.appendChild(particle);
+            
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 3 + Math.random() * 2;
+            const lifetime = 1000 + Math.random() * 500;
+            
+            let posX = x;
+            let posY = y;
+            let opacity = 1;
+            
+            const animate = () => {
+                posX += Math.cos(angle) * velocity;
+                posY += Math.sin(angle) * velocity;
+                opacity -= 0.02;
+                
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+                particle.style.opacity = opacity;
+                
+                if (opacity > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    particle.remove();
+                }
+            };
+            
+            requestAnimationFrame(animate);
         }
     </script>
 </body>
