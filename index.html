@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epic Mega Clicker</title>
+    <title>Mega Clicker</title>
     <style>
         :root {
             --main-color: #6a11cb;
             --accent-color: #fc00ff;
             --dark-color: #4a00e0;
+            --tab-color: #1a1a2e;
         }
         
         body {
@@ -17,143 +18,154 @@
             background: linear-gradient(45deg, var(--main-color), var(--dark-color));
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             color: white;
             overflow-x: hidden;
+            position: relative;
+            padding-bottom: 80px; /* Для нижних вкладок */
         }
         
         .container {
             max-width: 800px;
             margin: 0 auto;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 0 50px rgba(0,0,0,0.5);
-            backdrop-filter: blur(10px);
-            border: 2px solid var(--accent-color);
-        }
-        
-        h1 {
-            color: var(--accent-color);
-            margin-bottom: 10px;
-            font-size: 3rem;
-            text-shadow: 0 0 10px rgba(252, 0, 255, 0.7);
-        }
-        
-        #counter {
-            font-size: 5rem;
-            font-weight: bold;
-            margin: 30px 0;
-            color: white;
-            text-shadow: 0 0 20px var(--accent-color);
-            background: rgba(0,0,0,0.3);
             padding: 20px;
-            border-radius: 15px;
-            border: 3px solid var(--accent-color);
+        }
+        
+        /* Стиль огромной кнопки как в NotCoin */
+        .click-area {
+            position: fixed;
+            bottom: 100px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+            z-index: 10;
         }
         
         .click-btn {
-            padding: 25px 60px;
-            font-size: 2rem;
-            background: linear-gradient(45deg, var(--accent-color), var(--main-color));
-            color: white;
-            border: none;
-            border-radius: 50px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, var(--accent-color), var(--main-color));
+            border: 5px solid white;
+            box-shadow: 0 0 50px rgba(252, 0, 255, 0.7);
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-        
-        .click-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            color: white;
+            text-shadow: 0 0 10px black;
+            transition: all 0.1s;
+            user-select: none;
         }
         
         .click-btn:active {
             transform: scale(0.95);
+            box-shadow: 0 0 30px rgba(252, 0, 255, 0.5);
         }
         
-        .upgrades {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-top: 30px;
+        /* Нижние вкладки */
+        .tabs {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--tab-color);
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            border-top: 2px solid var(--accent-color);
+            z-index: 100;
         }
         
+        .tab {
+            text-align: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: rgba(106, 17, 203, 0.5);
+        }
+        
+        .tab i {
+            font-size: 1.5rem;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        /* Контент вкладок */
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Стили для улучшений */
         .upgrade {
             background: rgba(0,0,0,0.4);
             padding: 15px;
             border-radius: 15px;
+            margin: 10px 0;
             border: 2px solid var(--main-color);
-            transition: all 0.3s;
-        }
-        
-        .upgrade:hover {
-            border-color: var(--accent-color);
-            transform: translateY(-3px);
         }
         
         .upgrade-btn {
-            padding: 10px 20px;
             background: linear-gradient(45deg, #00c6ff, #0072ff);
             color: white;
             border: none;
+            padding: 10px 20px;
             border-radius: 50px;
             cursor: pointer;
-            font-weight: bold;
             margin-top: 10px;
         }
         
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin: 30px 0;
+        /* Анимация клика */
+        @keyframes clickEffect {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
         }
         
-        .stat-box {
-            background: rgba(0,0,0,0.4);
-            padding: 15px;
-            border-radius: 15px;
-            min-width: 150px;
-            border: 2px solid var(--main-color);
-        }
-        
-        @media (max-width: 600px) {
-            .click-btn {
-                padding: 20px 40px;
-                font-size: 1.5rem;
-            }
-            
-            .upgrades {
-                grid-template-columns: 1fr;
-            }
+        .click-effect {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: clickEffect 0.6s ease-out;
+            z-index: 20;
         }
     </style>
+    <!-- Иконки для вкладок -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>EPIC MEGA CLICKER</h1>
-        
-        <div id="counter">0</div>
-        
-        <button class="click-btn" onclick="increment()">КЛИКНУТЬ! 💥</button>
-        
-        <div class="stats">
-            <div class="stat-box">
-                <h3>Кликов/сек</h3>
-                <p id="cps">0</p>
-            </div>
-            <div class="stat-box">
-                <h3>Всего кликов</h3>
-                <p id="total-clicks">0</p>
-            </div>
+        <!-- Главный экран -->
+        <div id="main-tab" class="tab-content active">
+            <h1>MEGA CLICKER</h1>
+            <div id="counter">0</div>
+            <p>Кликов в секунду: <span id="cps">0</span></p>
         </div>
         
-        <div class="upgrades">
+        <!-- Вкладка улучшений -->
+        <div id="upgrades-tab" class="tab-content">
+            <h2>Улучшения</h2>
+            
             <div class="upgrade">
                 <h3>⚡ Автокликер I</h3>
                 <p>+1 клик/сек</p>
@@ -167,20 +179,37 @@
                 <p id="autoclicker-2-count">Куплено: 0</p>
                 <button class="upgrade-btn" onclick="buyUpgrade('autoclicker-2', 25000)">Купить (25000)</button>
             </div>
-            
+        </div>
+        
+        <!-- Вкладка статистики -->
+        <div id="stats-tab" class="tab-content">
+            <h2>Статистика</h2>
             <div class="upgrade">
-                <h3>💎 Бустер кликов</h3>
-                <p>Удваивает силу кликов</p>
-                <p id="click-booster-count">Куплено: 0</p>
-                <button class="upgrade-btn" onclick="buyUpgrade('click-booster', 100000)">Купить (100000)</button>
+                <p>Всего кликов: <span id="total-clicks">0</span></p>
+                <p>Время игры: <span id="play-time">0:00</span></p>
+                <p>Максимум кликов/сек: <span id="max-cps">0</span></p>
             </div>
-            
-            <div class="upgrade">
-                <h3>🏆 Премиум</h3>
-                <p>+10% ко всем доходам</p>
-                <p id="premium-count">Куплено: 0</p>
-                <button class="upgrade-btn" onclick="buyUpgrade('premium', 500000)">Купить (500000)</button>
-            </div>
+        </div>
+    </div>
+    
+    <!-- Огромная кнопка клика -->
+    <div class="click-area">
+        <div class="click-btn" id="clicker">TAP!</div>
+    </div>
+    
+    <!-- Нижние вкладки -->
+    <div class="tabs">
+        <div class="tab active" onclick="openTab('main-tab', this)">
+            <i class="fas fa-home"></i>
+            <span>Главная</span>
+        </div>
+        <div class="tab" onclick="openTab('upgrades-tab', this)">
+            <i class="fas fa-arrow-up"></i>
+            <span>Улучшения</span>
+        </div>
+        <div class="tab" onclick="openTab('stats-tab', this)">
+            <i class="fas fa-chart-line"></i>
+            <span>Статистика</span>
         </div>
     </div>
 
@@ -189,47 +218,62 @@
         let count = localStorage.getItem('clickCount') ? parseInt(localStorage.getItem('clickCount')) : 0;
         let totalClicks = localStorage.getItem('totalClicks') ? parseInt(localStorage.getItem('totalClicks')) : 0;
         let cps = 0;
+        let maxCPS = 0;
+        let playTime = 0;
         let upgrades = {
             'autoclicker-1': { count: 0, power: 1, price: 5000 },
-            'autoclicker-2': { count: 0, power: 5, price: 25000 },
-            'click-booster': { count: 0, power: 2, price: 100000 },
-            'premium': { count: 0, power: 1.1, price: 500000 }
+            'autoclicker-2': { count: 0, power: 5, price: 25000 }
         };
         
-        // Загрузка сохранений
+        // Загрузка игры
         function loadGame() {
             const saved = localStorage.getItem('upgrades');
             if (saved) upgrades = JSON.parse(saved);
             
             updateCounters();
             calculateCPS();
-        }
-        
-        // Сохранение игры
-        function saveGame() {
-            localStorage.setItem('clickCount', count);
-            localStorage.setItem('totalClicks', totalClicks);
-            localStorage.setItem('upgrades', JSON.stringify(upgrades));
-        }
-        
-        // Основной клик
-        function increment() {
-            let clickPower = 1;
-            if (upgrades['click-booster'].count > 0) {
-                clickPower *= Math.pow(upgrades['click-booster'].power, upgrades['click-booster'].count);
-            }
-            if (upgrades['premium'].count > 0) {
-                clickPower *= Math.pow(upgrades['premium'].power, upgrades['premium'].count);
-            }
             
-            count += clickPower;
-            totalClicks += clickPower;
+            // Таймер игрового времени
+            setInterval(() => {
+                playTime++;
+                const minutes = Math.floor(playTime / 60);
+                const seconds = playTime % 60;
+                document.getElementById('play-time').textContent = 
+                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+        
+        // Клик по главной кнопке
+        document.getElementById('clicker').addEventListener('click', function(e) {
+            increment();
+            createClickEffect(e);
+        });
+        
+        function increment() {
+            count++;
+            totalClicks++;
             
             updateCounters();
             saveGame();
+        }
+        
+        // Эффект при клике
+        function createClickEffect(e) {
+            const effect = document.createElement('div');
+            effect.className = 'click-effect';
             
-            // Анимация
-            animateClick();
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            effect.style.left = `${x - 25}px`;
+            effect.style.top = `${y - 25}px`;
+            
+            e.target.appendChild(effect);
+            
+            setTimeout(() => {
+                effect.remove();
+            }, 600);
         }
         
         // Покупка улучшения
@@ -237,15 +281,12 @@
             if (count >= price) {
                 count -= price;
                 upgrades[type].count++;
-                
-                // Увеличиваем цену для следующей покупки
                 upgrades[type].price = Math.floor(price * 1.5);
                 
                 calculateCPS();
                 updateCounters();
                 saveGame();
                 
-                // Обновляем кнопку
                 document.querySelector(`button[onclick="buyUpgrade('${type}', ${upgrades[type].price})"]`)
                     .textContent = `Купить (${upgrades[type].price})`;
             } else {
@@ -253,81 +294,15 @@
             }
         }
         
-        // Расчет кликов в секунду
+        // Расчет CPS
         function calculateCPS() {
             cps = upgrades['autoclicker-1'].count * upgrades['autoclicker-1'].power + 
                   upgrades['autoclicker-2'].count * upgrades['autoclicker-2'].power;
-                  
-            if (upgrades['premium'].count > 0) {
-                cps *= Math.pow(upgrades['premium'].power, upgrades['premium'].count);
-            }
+            
+            if (cps > maxCPS) maxCPS = cps;
             
             document.getElementById('cps').textContent = cps;
-        }
-        
-        // Обновление всех счетчиков
-        function updateCounters() {
-            document.getElementById('counter').textContent = Math.floor(count).toLocaleString();
-            document.getElementById('total-clicks').textContent = Math.floor(totalClicks).toLocaleString();
-            
-            // Обновляем счетчики улучшений
-            for (const [type, data] of Object.entries(upgrades)) {
-                document.getElementById(`${type}-count`).textContent = `Куплено: ${data.count}`;
-            }
-        }
-        
-        // Анимация клика
-        function animateClick() {
-            const btn = document.querySelector('.click-btn');
-            btn.style.transform = 'scale(0.9)';
-            setTimeout(() => { btn.style.transform = 'scale(1)'; }, 100);
-            
-            // Создаем эффект частицы
-            const particle = document.createElement('div');
-            particle.style.position = 'absolute';
-            particle.style.width = '20px';
-            particle.style.height = '20px';
-            particle.style.background = 'radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(252,0,255,0) 70%)';
-            particle.style.borderRadius = '50%';
-            particle.style.pointerEvents = 'none';
-            particle.style.zIndex = '100';
-            
-            const rect = btn.getBoundingClientRect();
-            const x = rect.left + rect.width/2;
-            const y = rect.top + rect.height/2;
-            
-            particle.style.left = `${x}px`;
-            particle.style.top = `${y}px`;
-            document.body.appendChild(particle);
-            
-            const angle = Math.random() * Math.PI * 2;
-            const velocity = 5 + Math.random() * 3;
-            
-            let posX = x;
-            let posY = y;
-            let opacity = 1;
-            let size = 20;
-            
-            const animate = () => {
-                posX += Math.cos(angle) * velocity;
-                posY += Math.sin(angle) * velocity;
-                opacity -= 0.02;
-                size -= 0.5;
-                
-                particle.style.left = `${posX}px`;
-                particle.style.top = `${posY}px`;
-                particle.style.opacity = opacity;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                
-                if (opacity > 0) {
-                    requestAnimationFrame(animate);
-                } else {
-                    particle.remove();
-                }
-            };
-            
-            requestAnimationFrame(animate);
+            document.getElementById('max-cps').textContent = maxCPS;
         }
         
         // Автокликер
@@ -340,7 +315,42 @@
             }
         }, 100);
         
-        // Загрузка игры
+        // Обновление интерфейса
+        function updateCounters() {
+            document.getElementById('counter').textContent = count.toLocaleString();
+            document.getElementById('total-clicks').textContent = totalClicks.toLocaleString();
+            
+            for (const [type, data] of Object.entries(upgrades)) {
+                const element = document.getElementById(`${type}-count`);
+                if (element) element.textContent = `Куплено: ${data.count}`;
+            }
+        }
+        
+        // Сохранение игры
+        function saveGame() {
+            localStorage.setItem('clickCount', count);
+            localStorage.setItem('totalClicks', totalClicks);
+            localStorage.setItem('upgrades', JSON.stringify(upgrades));
+        }
+        
+        // Переключение вкладок
+        function openTab(tabId, element) {
+            // Скрыть все вкладки
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Показать выбранную
+            document.getElementById(tabId).classList.add('active');
+            
+            // Обновить активную кнопку
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            element.classList.add('active');
+        }
+        
+        // Запуск игры
         window.onload = loadGame;
     </script>
 </body>
