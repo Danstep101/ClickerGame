@@ -1,0 +1,18 @@
+# Папки окружения и кэша
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Файлы IDE
+.idea/
+.vscode/
+*.iml
+
+# Системные файлы
+.DS_Store (для Mac)
+Thumbs.db (для Windows)
+
+# Логи и временные файлы
+*.log
+*.tmp
